@@ -1,23 +1,24 @@
 from utils import *
 from datasets import PascalVOCDataset
-from tqdm import tqdm
 from pprint import PrettyPrinter
+from tqdm import tqdm
 
 # Good formatting when printing the APs for each class and mAP
 pp = PrettyPrinter()
 
 # Parameters
-data_folder = './'
+data_folder = 'C:/Users/duckl/Documents/ssd data/'
 keep_difficult = True  # difficult ground truth objects must always be considered in mAP calculation, because these objects DO exist!
 batch_size = 64
 workers = 4
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-checkpoint = './checkpoint_ssd300.pth.tar'
+checkpoint = 'C:/Users/duckl/Documents/ssd data/checkpoint_ssd300.pth.tar'
 
 # Load model checkpoint that is to be evaluated
 checkpoint = torch.load(checkpoint)
 model = checkpoint['model']
 model = model.to(device)
+
 
 # Switch to eval mode
 model.eval()

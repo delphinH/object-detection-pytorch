@@ -5,6 +5,8 @@ import random
 import xml.etree.ElementTree as ET
 import torchvision.transforms.functional as FT
 
+import sys
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Label map
@@ -59,6 +61,8 @@ def create_data_lists(voc07_path, voc12_path, output_folder):
     """
     voc07_path = os.path.abspath(voc07_path)
     voc12_path = os.path.abspath(voc12_path)
+    print(voc07_path)
+    print(voc12_path)
 
     train_images = list()
     train_objects = list()
@@ -232,7 +236,7 @@ def calculate_mAP(det_boxes, det_labels, det_scores, true_boxes, true_labels, tr
 
             # 'ind' is the index of the object in these image-level tensors 'object_boxes', 'object_difficulties'
             # In the original class-level tensors 'true_class_boxes', etc., 'ind' corresponds to object with index...
-            original_ind = torch.LongTensor(range(true_class_boxes.size(0)))[true_class_images == this_image][ind]
+            original_ind = torch.LongTensor(range(true_class_boxes.size(0))).to(device)[true_class_images == this_image][ind]
             # We need 'original_ind' to update 'true_class_boxes_detected'
 
             # If the maximum overlap is greater than the threshold of 0.5, it's a match
@@ -567,7 +571,7 @@ def photometric_distort(image):
 
     for d in distortions:
         if random.random() < 0.5:
-            if d.__name__ is 'adjust_hue':
+            if d.__name__ == 'adjust_hue': # Amend 'is' to '=='. 20230520
                 # Caffe repo uses a 'hue_delta' of 18 - we divide by 255 because PyTorch needs a normalized value
                 adjust_factor = random.uniform(-18 / 255., 18 / 255.)
             else:
@@ -677,7 +681,7 @@ def save_checkpoint(epoch, model, optimizer):
     state = {'epoch': epoch,
              'model': model,
              'optimizer': optimizer}
-    filename = 'checkpoint_ssd300.pth.tar'
+    filename = 'C:/Users/duckl/Documents/ssd data/checkpoint_ssd300.pth.tar'
     torch.save(state, filename)
 
 
