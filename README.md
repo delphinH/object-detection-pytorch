@@ -1,3 +1,7 @@
+<p align="center">
+<img src="./imgs/butch.gif">
+</p>
+
 # object-detection-pytorch
 SSD: Single Shot mutibox Detector
 

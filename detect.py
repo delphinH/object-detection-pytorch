@@ -2,6 +2,13 @@ from torchvision import transforms
 from utils import *
 from PIL import Image, ImageDraw, ImageFont
 
+import re
+
+def natural_sort(l): 
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key=alphanum_key)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load model checkpoint
@@ -96,10 +103,34 @@ def detect(original_image, min_score, max_overlap, top_k, suppress=None):
 
 
 if __name__ == '__main__':
-    img_path = 'C:/Users/duckl/Documents/ssd data/VOC2007/JPEGImages/000119.jpg'
-    original_image = Image.open(img_path, mode='r')
-    original_image = original_image.convert('RGB')
-    yyy = detect(original_image, min_score=0.2, max_overlap=0.5, top_k=200)
-    print(type(yyy))
-    yyy.save("C:/Users/duckl/Documents/ssd data/cat002.jpg")
-    yyy.show()
+    ### image
+    # img_path = 'C:/Users/duckl/Documents/ssd data/VOC2007/JPEGImages/000079.jpg'
+    # original_image = Image.open(img_path, mode='r')
+    # original_image = original_image.convert('RGB')
+    # yyy = detect(original_image, min_score=0.2, max_overlap=0.5, top_k=200)
+    # print(type(yyy))
+    # yyy.save("C:/Users/duckl/Documents/ssd data/cat002.jpg")
+    # yyy.show()
+
+    ### video
+    img_path = 'C:/Users/duckl/Documents/ssd data/VOC2007/'
+    img_list = []
+    for file in os.listdir(img_path):
+        if file.endswith('.jpg'):
+            img_list.append(os.path.join(img_path, file))
+    
+    imgs_list = natural_sort(img_list)
+
+    frame_list = []
+    for k, image_path in enumerate(imgs_list):
+        original_image = Image.open(image_path, mode='r')
+        original_image = original_image.convert('RGB')
+        yyy = detect(original_image, min_score=0.2, max_overlap=0.5, top_k=200)
+        # yyy.save(f"C:/Users/duckl/Documents/ssd data/VOC2007/pred_frame_{k}.jpg")
+        print(type(yyy))
+        frame_list.append(yyy)
+
+    # images to GIF
+    frame_list[0].save('C:/Users/duckl/Documents/ssd data/VOC2007/butch.gif', save_all = True, duration=100, append_images=frame_list[1:], loop=0)
+
+    print('Done')
